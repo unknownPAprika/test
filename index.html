@@ -9,31 +9,37 @@
 <body>
     <header>
         <h1>📸 Моя фотогалерея</h1>
-        <p>Нажмите на кнопку, чтобы скачать фото</p>
+        <p>Нажмите на кнопку, чтобы скачать файл</p>
     </header>
 
     <main class="gallery">
+        <!-- ZIP-архив вместо фото 1 -->
         <div class="card">
-            <img src="images/photo1.jpg" alt="Фото 1" loading="lazy">
+            <div class="zip-preview">
+                <span class="zip-icon">📦</span>
+                <span class="zip-label">ZIP-архив</span>
+            </div>
             <div class="card-info">
-                <h3>Название фото 1</h3>
-                <a href="images/photo1.jpg" download class="download-btn">⬇ Скачать</a>
+                <h3>Мой архив</h3>
+                <a href="files/archive.rar" class="download-btn">⬇ Скачать ZIP</a>
             </div>
         </div>
 
+        <!-- Фото 2 -->
         <div class="card">
             <img src="images/photo2.jpg" alt="Фото 2" loading="lazy">
             <div class="card-info">
                 <h3>Название фото 2</h3>
-                <a href="images/photo2.jpg" download class="download-btn">⬇ Скачать</a>
+                <a href="images/photo2.jpg" class="download-btn">⬇ Скачать</a>
             </div>
         </div>
 
+        <!-- Фото 3 -->
         <div class="card">
             <img src="images/photo3.jpg" alt="Фото 3" loading="lazy">
             <div class="card-info">
                 <h3>Название фото 3</h3>
-                <a href="images/photo3.jpg" download class="download-btn">⬇ Скачать</a>
+                <a href="images/photo3.jpg" class="download-btn">⬇ Скачать</a>
             </div>
         </div>
     </main>

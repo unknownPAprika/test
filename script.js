@@ -23,49 +23,20 @@ closeBtn.addEventListener('click', closeModal);
 modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
-// ===== Скачивание через XHR (работает даже там, где fetch падает) =====
-function downloadViaXHR(url, filename) {
-    return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.responseType = 'blob';
-
-        xhr.onload = () => {
-            // Успех: 200, или 0 (бывает при file://)
-            if (xhr.status === 200 || xhr.status === 0) {
-                const blob = xhr.response;
-                if (!blob || blob.size === 0) {
-                    reject(new Error('Пустой файл'));
-                    return;
-                }
-                saveBlob(blob, filename);
-                resolve();
-            } else {
-                reject(new Error('HTTP ' + xhr.status));
-            }
-        };
-        xhr.onerror = () => reject(new Error('Сетевая ошибка'));
-        xhr.send();
-    });
-}
-
-// Универсальное сохранение blob
+// ===== Универсальное сохранение blob =====
 function saveBlob(blob, filename) {
-    // Пытаемся через File System Access API (Chrome/Edge) — самый надёжный способ
+    // File System Access API (Chrome/Edge) — окно "Сохранить как"
     if (window.showSaveFilePicker) {
         window.showSaveFilePicker({
             suggestedName: filename,
             types: [{
-                description: 'Изображение',
-                accept: { [blob.type || 'image/jpeg']: ['.' + (filename.split('.').pop() || 'jpg')] }
+                description: 'Файл',
+                accept: { [blob.type || 'application/octet-stream']: ['.' + (filename.split('.').pop() || 'bin')] }
             }]
         }).then(handle => handle.createWritable())
           .then(writable => writable.write(blob).then(() => writable.close()))
           .catch(err => {
-              // Пользователь отменил — не страшно
-              if (err.name !== 'AbortError') {
-                  fallbackSave(blob, filename);
-              }
+              if (err.name !== 'AbortError') fallbackSave(blob, filename);
           });
     } else {
         fallbackSave(blob, filename);
@@ -86,10 +57,31 @@ function fallbackSave(blob, filename) {
     }, 1500);
 }
 
-// Главная функция скачивания с несколькими попытками
-async function downloadImage(url, filename) {
+// ===== Скачивание через XHR =====
+function downloadViaXHR(url, filename) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'blob';
+        xhr.onload = () => {
+            if (xhr.status === 200 || xhr.status === 0) {
+                const blob = xhr.response;
+                if (!blob || blob.size === 0) return reject(new Error('Пустой файл'));
+                saveBlob(blob, filename);
+                resolve();
+            } else {
+                reject(new Error('HTTP ' + xhr.status));
+            }
+        };
+        xhr.onerror = () => reject(new Error('Сетевая ошибка'));
+        xhr.send();
+    });
+}
+
+// ===== Главная функция с несколькими попытками =====
+async function downloadFile(url, filename) {
+    // Попытка 1: fetch
     try {
-        // Попытка 1: fetch + blob
         const response = await fetch(url, { cache: 'no-store' });
         if (!response.ok) throw new Error('HTTP ' + response.status);
         const blob = await response.blob();
@@ -100,45 +92,48 @@ async function downloadImage(url, filename) {
         console.warn('fetch не сработал:', e1.message);
     }
 
+    // Попытка 2: XHR
     try {
-        // Попытка 2: XHR + blob
         await downloadViaXHR(url, filename);
         return;
     } catch (e2) {
         console.warn('XHR не сработал:', e2.message);
     }
 
-    // Попытка 3: canvas — рисуем картинку и сохраняем как dataURL
-    // Работает только для same-origin картинок и без CORS-проблем
-    try {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        await new Promise((res, rej) => {
-            img.onload = res;
-            img.onerror = () => rej(new Error('Не загрузилась'));
-            img.src = url;
-        });
-        const canvas = document.createElement('canvas');
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        canvas.getContext('2d').drawImage(img, 0, 0);
-        canvas.toBlob(blob => {
-            if (blob) saveBlob(blob, filename);
-            else openManually(url);
-        }, 'image/jpeg', 0.95);
-        return;
-    } catch (e3) {
-        console.warn('canvas не сработал:', e3.message);
+    // Попытка 3: canvas (только для картинок)
+    if (/\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(url)) {
+        try {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            await new Promise((res, rej) => {
+                img.onload = res;
+                img.onerror = () => rej(new Error('Не загрузилась'));
+                img.src = url;
+            });
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            canvas.getContext('2d').drawImage(img, 0, 0);
+            await new Promise(resolve => {
+                canvas.toBlob(blob => {
+                    if (blob) saveBlob(blob, filename);
+                    else openManually(url);
+                    resolve();
+                }, 'image/jpeg', 0.95);
+            });
+            return;
+        } catch (e3) {
+            console.warn('canvas не сработал:', e3.message);
+        }
     }
 
-    // Последний шанс: открываем в новой вкладке
+    // Последний шанс
     openManually(url);
 }
 
 function openManually(url) {
     const w = window.open(url, '_blank');
     if (!w) {
-        // Если блокировщик не дал открыть — создаём ссылку
         const a = document.createElement('a');
         a.href = url;
         a.target = '_blank';
@@ -147,11 +142,9 @@ function openManually(url) {
         a.click();
         document.body.removeChild(a);
     }
-    // Показываем подсказку
-    showToast('Открыл фото в новой вкладке — нажмите правой кнопкой → «Сохранить изображение»');
+    showToast('Открыл файл в новой вкладке — сохраните его вручную (Ctrl+S)');
 }
 
-// Маленький тост-помощник вместо alert()
 function showToast(msg) {
     const t = document.createElement('div');
     t.textContent = msg;
@@ -175,12 +168,12 @@ function showToast(msg) {
     setTimeout(() => t.remove(), 5000);
 }
 
-// ===== Привязка кнопок =====
+// ===== Привязка ко всем кнопкам =====
 document.querySelectorAll('.download-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         e.preventDefault();
         const url = btn.getAttribute('href');
         const filename = decodeURIComponent(url.split('/').pop());
-        downloadImage(url, filename);
+        downloadFile(url, filename);
     });
 });

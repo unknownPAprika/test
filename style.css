@@ -42,6 +42,8 @@ header {
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
 }
 
     .card:hover {
@@ -67,6 +69,8 @@ header {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    flex: 1;
+    justify-content: flex-end;
 }
 
     .card-info h3 {
@@ -93,6 +97,39 @@ header {
 
     .download-btn:active {
         transform: scale(0.98);
+    }
+
+/* ZIP-превью */
+.zip-preview {
+    height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #4b6cb7, #182848);
+    color: #fff;
+}
+
+.zip-icon {
+    font-size: 4rem;
+    line-height: 1;
+}
+
+.zip-label {
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+/* Кнопка ZIP чуть другого цвета */
+.card-info a[href$=".zip"] {
+    background: linear-gradient(90deg, #11998e, #38ef7d);
+}
+
+    .card-info a[href$=".zip"]:hover {
+        box-shadow: 0 5px 20px rgba(56, 239, 125, 0.5);
     }
 
 footer {
