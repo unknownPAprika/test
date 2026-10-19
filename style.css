@@ -9,6 +9,8 @@ body {
     background: linear-gradient(135deg, #1e3c72, #2a5298);
     min-height: 100vh;
     color: #fff;
+    display: flex;
+    flex-direction: column;
 }
 
 header {
@@ -33,6 +35,8 @@ header {
     padding: 30px;
     max-width: 1200px;
     margin: 0 auto;
+    flex: 1;
+    justify-content: center;
 }
 
 .card {
@@ -44,24 +48,14 @@ header {
     transition: transform 0.3s, box-shadow 0.3s;
     display: flex;
     flex-direction: column;
+    max-width: 380px;
+    width: 100%;
+    margin: 0 auto;
 }
 
     .card:hover {
         transform: translateY(-8px);
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45);
-    }
-
-    .card img {
-        width: 100%;
-        height: 220px;
-        object-fit: cover;
-        display: block;
-        cursor: pointer;
-        transition: transform 0.4s;
-    }
-
-    .card:hover img {
-        transform: scale(1.05);
     }
 
 .card-info {
@@ -76,23 +70,25 @@ header {
     .card-info h3 {
         font-size: 1.1rem;
         font-weight: 500;
+        text-align: center;
     }
 
 .download-btn {
     display: inline-block;
     text-align: center;
-    padding: 12px 20px;
-    background: linear-gradient(90deg, #ff6b6b, #ff8e53);
+    padding: 14px 24px;
+    background: linear-gradient(90deg, #11998e, #38ef7d);
     color: #fff;
     text-decoration: none;
     border-radius: 50px;
     font-weight: 600;
+    font-size: 1.05rem;
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
     .download-btn:hover {
         transform: scale(1.05);
-        box-shadow: 0 5px 20px rgba(255, 107, 107, 0.5);
+        box-shadow: 0 5px 20px rgba(56, 239, 125, 0.5);
     }
 
     .download-btn:active {
@@ -123,52 +119,28 @@ header {
     opacity: 0.8;
 }
 
-/* Кнопка ZIP чуть другого цвета */
-.card-info a[href$=".zip"] {
-    background: linear-gradient(90deg, #11998e, #38ef7d);
-}
-
-    .card-info a[href$=".zip"]:hover {
-        box-shadow: 0 5px 20px rgba(56, 239, 125, 0.5);
-    }
-
 footer {
     text-align: center;
     padding: 30px;
     opacity: 0.7;
 }
 
-/* Модальное окно для просмотра фото */
-.modal {
-    display: none;
+/* Тост-уведомление */
+.toast {
     position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-
-    .modal.active {
-        display: flex;
-    }
-
-    .modal img {
-        max-width: 90%;
-        max-height: 90vh;
-        border-radius: 10px;
-        box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
-    }
-
-.modal-close {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    font-size: 3rem;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
     color: #fff;
-    cursor: pointer;
-    line-height: 1;
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-family: sans-serif;
+    font-size: 15px;
+    max-width: 90%;
+    text-align: center;
+    z-index: 2000;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
 }
 
 @media (max-width: 600px) {
