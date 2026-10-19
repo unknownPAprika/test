@@ -39,6 +39,7 @@ header {
     justify-content: center;
 }
 
+/* Карточка теперь кликабельна целиком */
 .card {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 15px;
@@ -51,11 +52,22 @@ header {
     max-width: 380px;
     width: 100%;
     margin: 0 auto;
+    cursor: pointer;
+    user-select: none;
 }
 
     .card:hover {
         transform: translateY(-8px);
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45);
+    }
+
+    .card:active {
+        transform: translateY(-4px) scale(0.98);
+    }
+
+    .card:focus-visible {
+        outline: 3px solid #38ef7d;
+        outline-offset: 4px;
     }
 
 .card-info {
@@ -64,35 +76,13 @@ header {
     flex-direction: column;
     gap: 12px;
     flex: 1;
-    justify-content: flex-end;
+    justify-content: center;
 }
 
     .card-info h3 {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         font-weight: 500;
         text-align: center;
-    }
-
-.download-btn {
-    display: inline-block;
-    text-align: center;
-    padding: 14px 24px;
-    background: linear-gradient(90deg, #11998e, #38ef7d);
-    color: #fff;
-    text-decoration: none;
-    border-radius: 50px;
-    font-weight: 600;
-    font-size: 1.05rem;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-    .download-btn:hover {
-        transform: scale(1.05);
-        box-shadow: 0 5px 20px rgba(56, 239, 125, 0.5);
-    }
-
-    .download-btn:active {
-        transform: scale(0.98);
     }
 
 /* ZIP-превью */
@@ -105,11 +95,21 @@ header {
     gap: 10px;
     background: linear-gradient(135deg, #4b6cb7, #182848);
     color: #fff;
+    transition: background 0.3s;
+}
+
+.card:hover .zip-preview {
+    background: linear-gradient(135deg, #5a7ecb, #223a5e);
 }
 
 .zip-icon {
     font-size: 4rem;
     line-height: 1;
+    transition: transform 0.3s;
+}
+
+.card:hover .zip-icon {
+    transform: scale(1.1);
 }
 
 .zip-label {
@@ -117,6 +117,23 @@ header {
     letter-spacing: 2px;
     text-transform: uppercase;
     opacity: 0.8;
+}
+
+.download-hint {
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    background: rgba(56, 239, 125, 0.2);
+    border: 1px solid rgba(56, 239, 125, 0.5);
+    border-radius: 50px;
+    color: #a8f5c5;
+    opacity: 0;
+    transform: translateY(5px);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.card:hover .download-hint {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 footer {
@@ -151,5 +168,10 @@ footer {
     .gallery {
         padding: 15px;
         gap: 15px;
+    }
+    /* На тач-устройствах подсказка видна всегда */
+    .download-hint {
+        opacity: 1;
+        transform: translateY(0);
     }
 }

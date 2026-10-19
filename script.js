@@ -101,12 +101,21 @@ function showToast(msg) {
     setTimeout(() => t.remove(), 5000);
 }
 
-// ===== Привязка кнопки =====
-document.querySelectorAll('.download-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const url = btn.getAttribute('href');
-        const filename = decodeURIComponent(url.split('/').pop());
+// ===== Клик по всей карточке =====
+document.querySelectorAll('.card[data-file]').forEach(card => {
+    const url = card.getAttribute('data-file');
+    const filename = decodeURIComponent(url.split('/').pop());
+
+    // Клик
+    card.addEventListener('click', () => {
         downloadFile(url, filename);
+    });
+
+    // Поддержка клавиатуры (Enter / Space)
+    card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            downloadFile(url, filename);
+        }
     });
 });

@@ -9,18 +9,19 @@
 <body>
     <header>
         <h1>📦 Мой архив</h1>
-        <p>Нажмите на кнопку, чтобы скачать ZIP-архив</p>
+        <p>Нажмите на карточку, чтобы скачать ZIP-архив</p>
     </header>
 
     <main class="gallery">
-        <div class="card">
+        <!-- Вся карточка кликабельна -->
+        <div class="card" data-file="files/archive.rar" role="button" tabindex="0" aria-label="Скачать ZIP-архив">
             <div class="zip-preview">
                 <span class="zip-icon">📦</span>
                 <span class="zip-label">ZIP-архив</span>
+                <span class="download-hint">⬇ Нажмите, чтобы скачать</span>
             </div>
             <div class="card-info">
                 <h3>Мой архив</h3>
-                <a href="files/archive.rar" class="download-btn">⬇ Скачать ZIP</a>
             </div>
         </div>
     </main>
